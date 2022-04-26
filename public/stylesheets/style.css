@@ -1,4 +1,5 @@
 body {
+  text-align: center;
   padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
@@ -11,8 +12,13 @@ h1 {
   color: 15px;
 }
 
+form {
+  display: block;
+  margin: 1rem auto;
+}
+
 .book-summary {
-  background-color: #ccc;
+  background-color: rgb(223, 212, 71);
   border: 1px solid #666;
   margin: 1rem;
   padding: 1rem;
