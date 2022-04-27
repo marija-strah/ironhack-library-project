@@ -39,7 +39,8 @@ router.post("/register", (req, res, next) => {
             return User.create(userDetails)
         })
         .then ( userFromDB => {
-            res.send("user was created")
+            //res.send("user was created"), changed to the next line after creating user-profile route
+            res.redirect('/login')
         })
         .catch(error => {
             console.log("Error creating account", error);
@@ -72,7 +73,16 @@ router.post("/login", (req, res, next) => {
             } else if (bcryptjs.compareSync(password, userFromDB.passwordHash)) {
                 //login sucessful
                 //res.send("login successful")
-                res.render('auth/user-profile', {user: userFromDB}); // cant do redirect YET bc we dont have that ROUTE
+                req.session.currentUser = userFromDB;
+
+                //1st option
+                //res.render('auth/user-profile', {user: userFromDB}); // cant do redirect YET bc we dont have that ROUTE
+
+                //2nd option
+                //res.render('auth/user-profile', {user: req.session.currentUser});
+
+                // finally, redirect
+                res.redirect("/user-profile");
             } else {
                 //login failed (password doesn't match)
                 res.render('auth/login', { errorMessage: 'Incorrect credentials.' });
@@ -87,7 +97,8 @@ router.post("/login", (req, res, next) => {
 
 //PROFILE PAGE
 router.get('/user-profile', (req, res, next) => {
-    res.render('auth/user-profile');
+    res.render('auth/user-profile', {user: req.session.currentUser});
 });
+
 
 module.exports = router;

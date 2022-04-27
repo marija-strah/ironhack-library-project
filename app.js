@@ -15,28 +15,23 @@ const hbs = require("hbs");
 
 const app = express();
 
+require('./config/session.config')(app);
+
+
 // ℹ️ This function is getting exported from the config folder. It runs most pieces of middleware
 require("./config")(app);
 
 // default value for title local
 const capitalized = require("./utils/capitalized");
-const projectName = "ironhack-library-project";
+const projectName = "library-project";
 
 app.locals.appTitle = `${capitalized(projectName)} created with IronLauncher`;
 
 // 👇 Start handling routes here
-const index = require("./routes/index.routes");
-app.use("/", index);
-
-// mounting
-const bookRoutes = require ("./routes/book.routes");
-app.use("/", bookRoutes);
-
-const authorRoutes = require ("./routes/author.routes");
-app.use("/", authorRoutes);
-
-const authRoutes = require("./routes/auth.routes")
-app.use("/", authRoutes);
+app.use("/", require("./routes/index.routes"));
+app.use("/", require("./routes/auth.routes"));
+app.use("/books", require("./routes/book.routes"))
+app.use("/authors", require("./routes/author.routes"))
 
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
