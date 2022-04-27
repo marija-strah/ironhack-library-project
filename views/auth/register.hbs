@@ -1,0 +1,26 @@
+<h2>Register</h2>
+
+<form action="/register" method="POST">
+
+    {{#if errorMessage}}
+        <p class="warning">
+            {{errorMessage}}
+        </p>
+    {{/if}}
+
+    <label> Email
+        <input type="email" name="email" placeholder="rockstar@ironhack.com" required />
+    </label>
+
+    <label> Password
+        <input type="password" name="password" placeholder="********" required />
+    </label>
+
+    <button type="submit">Create account</button>
+
+    <div>
+        <p>Already have an account? <a href="/login">Click here</a> to log in!</p>
+    </div>
+
+    {{!-- error message will be added here --}}
+</form>
