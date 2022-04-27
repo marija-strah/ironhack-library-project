@@ -5,7 +5,7 @@ const Author = require("../models/Author.model");
 const router = require("express").Router();
 
 
-// READ - display lsit of books
+// READ - display list  of books
 router.get("/books", (req, res, next) => {
     Book.find()
         .populate("author")     //"author" is property of model, not model, so lower case
