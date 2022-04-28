@@ -23,9 +23,14 @@ require("./config")(app);
 
 // default value for title local
 const capitalized = require("./utils/capitalized");
-const projectName = "library-project";
+const projectName = "ironhack-library-project";
 
 app.locals.appTitle = `${capitalized(projectName)} created with IronLauncher`;
+
+app.use((req, res, next) => {
+    res.locals.session = req.session; // allow access to session data from handlebars (ex. in layout.hbs)
+    next()
+});
 
 // 👇 Start handling routes here
 app.use("/", require("./routes/index.routes"));

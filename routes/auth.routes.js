@@ -6,30 +6,27 @@ const User = require("../models/User.model");
 const saltRounds = 10;
 
 
-// REGISTRATION: display form
+//REGISTRATION: display form
 router.get("/register", (req, res, next) => {
-    //res.send("mwa");  --> to check if the app works, after adding route to app.js
     res.render("auth/register");
 });
 
-
-// REGISTRATION: process form
+//REGISTRATION: process form
 router.post("/register", (req, res, next) => {
-
-    const { email, password } = req.body; //ES6 object destructuring
+    
+    const { email, password } = req.body;
 
     if( !email || !password){
         res.render("auth/register", {errorMessage: "Please provide email and password"});
-        return; // if we dont return, bcrypt executes regardless the error
+        return;
     }
 
     bcryptjs
-        .genSalt(saltRounds)        // returns a promise, synchronous operation
+        .genSalt(saltRounds)
         .then( salt => {
-            return bcryptjs.hash(password, salt);  // string we want to hash is the user-provided pw
+            return bcryptjs.hash(password, salt);
         })
         .then( hash => {
-            console.log("hashedPassword...", hash);
 
             const userDetails = {
                 email,
@@ -38,30 +35,30 @@ router.post("/register", (req, res, next) => {
 
             return User.create(userDetails)
         })
-        .then ( userFromDB => {
-            //res.send("user was created"), changed to the next line after creating user-profile route
-            res.redirect('/login')
+        .then( userFromDB => {
+            res.redirect("/login")
         })
-        .catch(error => {
-            console.log("Error creating account", error);
+        .catch( error => {
+            console.log("error creating account", error);
             next(error);
-        })
-})
+        });
 
-// login - display form
+});
+
+
+//LOGIN: display form
 router.get("/login", (req, res, next) => {
-    res.render("auth/login")
+    res.render("auth/login");
 })
 
-
-// login - process form
+//LOGIN: process form
 router.post("/login", (req, res, next) => {
 
-    const { email, password } = req.body;
+    const {email, password} = req.body;
 
     if( !email || !password){
-        res.render("auth/login", {errorMessage: `Please provide email and password`});
-        return;     // if we dont return, bcrypt executes regardless
+        res.render("auth/login", {errorMessage: "Please provide email and password"});
+        return;
     }
 
     User.findOne({email: email})
@@ -72,16 +69,7 @@ router.post("/login", (req, res, next) => {
                 return;
             } else if (bcryptjs.compareSync(password, userFromDB.passwordHash)) {
                 //login sucessful
-                //res.send("login successful")
                 req.session.currentUser = userFromDB;
-
-                //1st option
-                //res.render('auth/user-profile', {user: userFromDB}); // cant do redirect YET bc we dont have that ROUTE
-
-                //2nd option
-                //res.render('auth/user-profile', {user: req.session.currentUser});
-
-                // finally, redirect
                 res.redirect("/user-profile");
             } else {
                 //login failed (password doesn't match)
@@ -92,12 +80,22 @@ router.post("/login", (req, res, next) => {
             console.log("Error getting user details from DB", error);
             next(error);
         });
-
 })
+
 
 //PROFILE PAGE
 router.get('/user-profile', (req, res, next) => {
-    res.render('auth/user-profile', {user: req.session.currentUser});
+    res.render('auth/user-profile');
+});
+
+//LOGOUT
+router.post('/logout', (req, res, next) => {
+    req.session.destroy(err => {
+        if (err){
+            next(err);
+        };
+        res.redirect('/');
+    });
 });
 
 

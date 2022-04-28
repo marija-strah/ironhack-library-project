@@ -1,17 +1,16 @@
 const Book = require("../models/Book.model");
-
 const Author = require("../models/Author.model");
 
 const router = require("express").Router();
 
+const {isLoggedIn} = require("../middleware/route-guard");
 
-// READ - display list  of books
-router.get("/books", (req, res, next) => {
+// READ: display list of books
+router.get("/", (req, res, next) => {
     Book.find()
-        .populate("author")     //"author" is property of model, not model, so lower case
+        .populate("author")
         .then((booksArr) => {
-            res.render("books/books-list", { books: booksArr }); //object is sent to the view
-            console.log(booksArr);
+            res.render("books/books-list", { books: booksArr });
         })
         .catch(err => {
             console.log("error getting books from DB", err)
@@ -21,8 +20,7 @@ router.get("/books", (req, res, next) => {
 
 
 // CREATE: render form
-router.get("/books/create", (req, res, next) => {
-
+router.get("/create", isLoggedIn, (req, res, next) => {
     Author.find()
         .then((authorsArr) => {
             res.render("books/book-create", {authors: authorsArr});
@@ -30,12 +28,12 @@ router.get("/books/create", (req, res, next) => {
         .catch(err => {
             console.log("error getting authors from DB", err)
             next(err);
-        });
-
+        });    
 })
 
+
 // CREATE: process form
-router.post("/books/create", (req, res, next) => {
+router.post("/create", isLoggedIn, (req, res, next) => {
 
     const newBook = {
         title: req.body.title,
@@ -56,16 +54,14 @@ router.post("/books/create", (req, res, next) => {
 })
 
 
-
 // READ: display book details
-router.get("/books/:bookId", (req, res, next) => {
+router.get("/:bookId", (req, res, next) => {
     const id = req.params.bookId;
 
     Book.findById(id)
         .populate("author")
         .then((bookDetails) => {
             res.render("books/book-details", bookDetails);
-            console.log(bookDetails);
         })
         .catch(err => {
             console.log("error getting book details from DB", err)
@@ -74,9 +70,8 @@ router.get("/books/:bookId", (req, res, next) => {
 })
 
 
-
 // UPDATE: display form
-router.get("/books/:bookId/edit", (req, res, next) => {
+router.get("/:bookId/edit", isLoggedIn, (req, res, next) => {
     const id = req.params.bookId;
     Book.findById(id)
         .then((bookDetails) => {
@@ -91,7 +86,7 @@ router.get("/books/:bookId/edit", (req, res, next) => {
 
 
 // UPDATE: process form
-router.post("/books/:bookId/edit", (req, res, next) => {
+router.post("/:bookId/edit", isLoggedIn, (req, res, next) => {
 
     const id = req.params.bookId;
 
@@ -113,8 +108,9 @@ router.post("/books/:bookId/edit", (req, res, next) => {
 });
 
 
-// DELETE
-router.post("/books/:bookId/delete", (req, res, next) => {
+
+// DELETE.
+router.post("/:bookId/delete", isLoggedIn, (req, res, next) => {
     const id = req.params.bookId;
     Book.findByIdAndRemove(id)
         .then(response => {
@@ -126,5 +122,6 @@ router.post("/books/:bookId/delete", (req, res, next) => {
         });
 
 });
+
 
 module.exports = router;

@@ -12,6 +12,10 @@ h1 {
   color: 15px;
 }
 
+header form {
+  display: inline-block;
+}
+
 form {
   display: block;
   margin: 1rem auto;
@@ -29,3 +33,4 @@ form {
   background-color: rgb(235, 212, 170);
   padding: 1rem;
 }
+
